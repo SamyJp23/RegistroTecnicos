@@ -182,10 +182,11 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>){
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
             Spacer(modifier =Modifier.height(32.dp))
-            Text("Lista de tecnicos")
+            Text("Lista de tecnicos", style = MaterialTheme.typography.bodyLarge)
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
