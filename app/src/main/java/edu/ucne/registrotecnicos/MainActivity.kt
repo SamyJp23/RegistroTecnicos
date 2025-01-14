@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -204,27 +205,48 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun TecnicoRow(it: TecnicoEntity){
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Text(
-                modifier = Modifier.weight(1f),
-                text = it.tecnicoId.toString(),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = it.nombre,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = it.sueldo.toString(),
-                style = MaterialTheme.typography.bodySmall
-            )
+    private fun TecnicoRow(tecnico: TecnicoEntity) {
+        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "ID:",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = tecnico.tecnicoId.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(3f)
+                )
+            }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Nombre:",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = tecnico.nombre,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(3f)
+                )
+            }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Sueldo:",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = tecnico.sueldo.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(3f)
+                )
+            }
+            HorizontalDivider()
         }
-        HorizontalDivider()
     }
 
 private suspend fun saveTecnico(tecnico: TecnicoEntity){
