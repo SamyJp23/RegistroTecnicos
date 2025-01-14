@@ -138,7 +138,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                     Text(text = "Nuevo")
                                 }
-                                Spacer(Modifier.width(80.dp))
+                                Spacer(Modifier.width(100.dp))
 
                                 val scope = rememberCoroutineScope()
                                 OutlinedButton(
@@ -191,7 +191,7 @@ class MainActivity : ComponentActivity() {
         ){
             Spacer(modifier =Modifier.height(32.dp))
             Text("Lista de técnicos", style = MaterialTheme.typography.bodyLarge)
-
+            Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ){
