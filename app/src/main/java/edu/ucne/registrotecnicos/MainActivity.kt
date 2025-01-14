@@ -16,7 +16,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -27,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -192,6 +195,30 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    }
+
+    @Composable
+    private fun TecnicoRow(it: TecnicoEntity){
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                modifier = Modifier.weight(1f),
+                text = it.tecnicoId.toString(),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                modifier = Modifier.weight(1f),
+                text = it.nombre,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                modifier = Modifier.weight(1f),
+                text = it.sueldo.toString(),
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+        HorizontalDivider()
     }
 
 private suspend fun saveTecnico(tecnico: TecnicoEntity){
