@@ -140,7 +140,7 @@ class MainActivity : ComponentActivity() {
                                 OutlinedButton(
                                     onClick = {
                                         if (nombre.isBlank()) {
-                                            errorMessage = "Nombre vacio"
+                                            errorMessage = "El campo nombre es obligatorio"
                                         } else {
                                             val sueldoD = sueldo.toDouble()
                                             scope.launch {
