@@ -186,7 +186,7 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Spacer(modifier =Modifier.height(32.dp))
-            Text("Lista de tecnicos", style = MaterialTheme.typography.bodyLarge)
+            Text("Lista de técnicos", style = MaterialTheme.typography.bodyLarge)
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
