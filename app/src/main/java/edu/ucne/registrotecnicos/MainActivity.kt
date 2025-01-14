@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -143,7 +146,7 @@ class MainActivity : ComponentActivity() {
                                                         sueldo = sueldoD
                                                     )
                                                 )
-                                                nombre = "",
+                                                nombre = ""
                                                 sueldo = ""
                                             }
                                         }
@@ -171,6 +174,24 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    @Composable
+    fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>){
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ){
+            Spacer(modifier =Modifier.height(32.dp))
+            Text("Lista de tecnicos")
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ){
+                items(tecnicoList){
+                    TecnicoRow(it)
+                }
+            }
+        }
+
     }
 
 private suspend fun saveTecnico(tecnico: TecnicoEntity){
