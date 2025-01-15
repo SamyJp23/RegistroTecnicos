@@ -36,10 +36,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.room.Dao
 import androidx.room.Database
@@ -53,6 +56,7 @@ import androidx.room.Upsert
 import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.time.format.TextStyle
 
 class MainActivity : ComponentActivity() {
     private lateinit var tecnicoDb: TecnicoDb
@@ -96,6 +100,7 @@ class MainActivity : ComponentActivity() {
                     .padding(8.dp)
 
             ) {
+
                 ElevatedCard(
                     modifier = Modifier.fillMaxWidth()
 
@@ -130,6 +135,9 @@ class MainActivity : ComponentActivity() {
                             {
                                 OutlinedButton(
                                     onClick = {
+
+                                        nombre= ""
+                                        sueldo = ""
 
                                     }
                                 ) {
@@ -171,7 +179,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                         }
-                        val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+                        val lifecycleOwner = LocalLifecycleOwner.current
                         val tecnicoList by tecnicoDb.tecnicoDao().getAll()
                             .collectAsStateWithLifecycle(
                                 initialValue = emptyList(),
