@@ -44,6 +44,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
@@ -53,6 +57,9 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Upsert
+import edu.ucne.registrotecnicos.data.local.database.TecnicoDb
+import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
+import edu.ucne.registrotecnicos.presentation.navigation.Screen
 import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -79,7 +86,8 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ){
-                        TecnicoScreen()
+                        val navController = rememberNavController()
+                        AppNavHost(navController)
                     }
                 }
 
@@ -87,7 +95,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     @Composable
-    fun TecnicoScreen() {
+    fun TecnicoScreen(
+        goTecnicoList: () -> Unit
+    ) {
         var nombre by remember { mutableStateOf("") }
         var sueldo by remember { mutableStateOf("") }
         var errorMessage: String? by remember { mutableStateOf(null) }
@@ -179,21 +189,15 @@ class MainActivity : ComponentActivity() {
                             }
 
                         }
-                        val lifecycleOwner = LocalLifecycleOwner.current
-                        val tecnicoList by tecnicoDb.tecnicoDao().getAll()
-                            .collectAsStateWithLifecycle(
-                                initialValue = emptyList(),
-                                lifecycleOwner = lifecycleOwner,
-                                minActiveState = Lifecycle.State.STARTED
-                            )
-                        TecnicoListScreen(tecnicoList)
+
                     }
                 }
             }
         }
     }
     @Composable
-    fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>){
+    fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>,
+                          onAddTecnico: () -> Unit){
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -260,44 +264,42 @@ class MainActivity : ComponentActivity() {
 private suspend fun saveTecnico(tecnico: TecnicoEntity){
     tecnicoDb.tecnicoDao().save(tecnico)
 }
-    @Entity(tableName = "Tecnicos")
-    data class TecnicoEntity(
-        @PrimaryKey
-        val tecnicoId: Int? = null,
-        val nombre: String = "",
-        val sueldo: Double
-    )
 
-    @Dao
-    interface TecnicoDao{
-        @Upsert
-        suspend fun save(tecnico: TecnicoEntity)
+    @Composable
+    fun AppNavHost(
+        navHostController: NavHostController
+    ){
+        val lifecycleOwner = LocalLifecycleOwner.current
+        val tecnicoList by tecnicoDb.tecnicoDao().getAll()
+            .collectAsStateWithLifecycle(
+                initialValue = emptyList(),
+                lifecycleOwner = lifecycleOwner,
+                minActiveState = Lifecycle.State.STARTED
+            )
+        NavHost(
 
-        @Query(
-            """
-            SELECT * FROM Tecnicos
-            WHERE tecnicoId = :id
-            LIMIT 1
-        """)
-        suspend fun find(id: Int): TecnicoEntity?
+            navController = navHostController,
+            startDestination = Screen.TecnicoList
+        ){
+            composable<Screen.TecnicoList>{
+                TecnicoListScreen(
+                    tecnicoList = tecnicoList,
+                    onAddTecnico = {navHostController.navigate(Screen.Tecnico(0))}
+                )
 
-        @Delete
-        suspend fun delete(tecnico: TecnicoEntity)
-
-        @Query("SELECT * FROM Tecnicos")
-        fun getAll(): Flow<List<TecnicoEntity>>
+            }
+            composable<Screen.Tecnico>{
+                TecnicoScreen(
+                    goTecnicoList = {navHostController.navigate(Screen.TecnicoList)}
+                )
+            }
+        }
     }
 
-    @Database(
-        entities = [
-            TecnicoEntity::class
-        ],
-        version = 1,
-        exportSchema = false
-    )
-    abstract class TecnicoDb : RoomDatabase(){
-        abstract fun tecnicoDao(): TecnicoDao
-    }
+
+
+
+
 
 }
 
