@@ -108,7 +108,7 @@ private fun TicketRow(ticket: TicketEntity) {
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = ticket.fecha,
+                text = "Fecha: ${ticket.fecha}",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(3f)
             )
