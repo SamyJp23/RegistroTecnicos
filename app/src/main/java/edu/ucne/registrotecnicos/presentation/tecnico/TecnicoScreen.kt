@@ -98,18 +98,6 @@ fun TecnicoScreen(
                                 onClick = {
                                     if (nombre.isBlank()) {
                                         errorMessage = "El campo nombre es obligatorio"
-                                    } else {
-                                        val sueldoD = sueldo.toDouble()
-                                        scope.launch {
-                                            saveTecnico(
-                                                TecnicoEntity(
-                                                    nombre = nombre,
-                                                    sueldo = sueldoD
-                                                )
-                                            )
-                                            nombre = ""
-                                            sueldo = ""
-                                        }
                                     }
                                 }
 
