@@ -62,6 +62,9 @@ import androidx.room.RoomDatabase
 import androidx.room.Upsert
 import edu.ucne.registrotecnicos.data.local.database.TecnicoDb
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
+import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
+import edu.ucne.registrotecnicos.data.local.repositories.TecnicoRepository
+import edu.ucne.registrotecnicos.data.local.repositories.TicketRepository
 import edu.ucne.registrotecnicos.presentation.navigation.Screen
 import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 import kotlinx.coroutines.flow.Flow
@@ -69,11 +72,18 @@ import kotlinx.coroutines.launch
 import java.time.format.TextStyle
 
 @Composable
-fun TicketScreen(goTicketList: () -> Unit) {
+fun TicketScreen(
+    tecnicoDb: TecnicoDb,
+    goTicketList: () -> Unit,
+    tecnicoRepository: TecnicoRepository,
+    ticketRepository: TicketRepository
+) {
     var fecha by remember { mutableStateOf("") }
     var cliente by remember { mutableStateOf("") }
     var asunto by remember { mutableStateOf("") }
+    var prioridadId by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
+    var tecnicoId by remember { mutableStateOf("") }
     var errorMessage: String? by remember { mutableStateOf(null) }
 
     Scaffold { innerPadding ->
@@ -129,13 +139,34 @@ fun TicketScreen(goTicketList: () -> Unit) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = "Nuevo")
                             Text("Nuevo")
                         }
+                        val scope = rememberCoroutineScope()
                         OutlinedButton(
                             onClick = {
-                                if (cliente.isBlank() || fecha.isBlank() || asunto.isBlank()) {
-                                    errorMessage = "Todos los campos son obligatorios"
+                                if (fecha.isBlank()  || cliente.isBlank() || asunto.isBlank() || descripcion.isBlank() || tecnicoId.isBlank()) {
+                                    errorMessage = "Revise que no haya campos vacios."
                                 } else {
-                                    errorMessage = null
-                                    goTicketList() // Simulate save and navigate back
+
+                                        val prioridad = prioridadId.toInt()
+                                        val tecnicoIdInt = tecnicoId.toInt()
+                                        scope.launch {
+                                            ticketRepository.saveTicket(
+                                                TicketEntity(
+                                                    fecha = fecha,
+                                                    prioridadId = prioridad,
+                                                    cliente = cliente,
+                                                    asunto = asunto,
+                                                    descripcion = descripcion,
+                                                    tecnicoId = tecnicoIdInt
+                                                )
+                                            )
+                                            fecha = ""
+                                            prioridadId = ""
+                                            cliente = ""
+                                            asunto = ""
+                                            descripcion = ""
+                                            tecnicoId = ""
+                                        }
+
                                 }
                             }
                         ) {

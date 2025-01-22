@@ -25,12 +25,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import edu.ucne.registrotecnicos.data.local.database.TecnicoDb
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
+import edu.ucne.registrotecnicos.data.local.repositories.TecnicoRepository
 import kotlinx.coroutines.launch
 
 @Composable
-fun TecnicoScreen(
-    goTecnicoList: () -> Unit
+fun TecnicoScreen(tecnicoDb: TecnicoDb,
+                  goTecnicoList: () -> Unit,
+                  tecnicoRepository: TecnicoRepository
 ) {
     var nombre by remember { mutableStateOf("") }
     var sueldo by remember { mutableStateOf("") }
@@ -98,6 +101,19 @@ fun TecnicoScreen(
                                 onClick = {
                                     if (nombre.isBlank()) {
                                         errorMessage = "El campo nombre es obligatorio"
+                                    }else{
+                                        val sueldoD = sueldo.toDouble()
+                                        scope.launch {
+                                            tecnicoRepository.saveTecnico(
+                                                TecnicoEntity(
+                                                nombre = nombre,
+                                                sueldo = sueldoD
+                                            )
+                                            )
+                                            nombre = ""
+                                            sueldo = ""
+                                            goTecnicoList()
+                                        }
                                     }
                                 }
 
