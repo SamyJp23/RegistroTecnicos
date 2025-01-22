@@ -59,6 +59,7 @@ import androidx.room.RoomDatabase
 import androidx.room.Upsert
 import edu.ucne.registrotecnicos.data.local.database.TecnicoDb
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
+import edu.ucne.registrotecnicos.presentation.navigation.AppNavHost
 import edu.ucne.registrotecnicos.presentation.navigation.Screen
 import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 import kotlinx.coroutines.flow.Flow
@@ -87,214 +88,17 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding)
                     ){
                         val navController = rememberNavController()
-                        AppNavHost(navController)
+                        AppNavHost(tecnicoDb,navController)
                     }
                 }
 
                 }
             }
         }
-    @Composable
-    fun TecnicoScreen(
-        goTecnicoList: () -> Unit
-    ) {
-        var nombre by remember { mutableStateOf("") }
-        var sueldo by remember { mutableStateOf("") }
-        var errorMessage: String? by remember { mutableStateOf(null) }
 
-        Scaffold { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(8.dp)
 
-            ) {
 
-                ElevatedCard(
-                    modifier = Modifier.fillMaxWidth()
 
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            OutlinedTextField(
-                                label = { Text(text = "Nombre") },
-                                value = nombre,
-                                onValueChange = { nombre = it },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            OutlinedTextField(
-                                label = { Text(text = "Sueldo") },
-                                value = sueldo,
-                                onValueChange = { sueldo = it },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Spacer(modifier = Modifier.padding(2.dp))
-                            errorMessage?.let {
-                                Text(text = it, color = Color.Red)
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                            {
-                                OutlinedButton(
-                                    onClick = {
-
-                                        nombre= ""
-                                        sueldo = ""
-
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Nuevo"
-                                    )
-                                    Text(text = "Nuevo")
-                                }
-                                Spacer(Modifier.width(100.dp))
-
-                                val scope = rememberCoroutineScope()
-                                OutlinedButton(
-                                    onClick = {
-                                        if (nombre.isBlank()) {
-                                            errorMessage = "El campo nombre es obligatorio"
-                                        } else {
-                                            val sueldoD = sueldo.toDouble()
-                                            scope.launch {
-                                                saveTecnico(
-                                                    TecnicoEntity(
-                                                        nombre = nombre,
-                                                        sueldo = sueldoD
-                                                    )
-                                                )
-                                                nombre = ""
-                                                sueldo = ""
-                                            }
-                                        }
-                                    }
-
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = "Guardar"
-                                    )
-                                    Text(text = "Guardar")
-                                }
-                            }
-
-                        }
-
-                    }
-                }
-            }
-        }
-    }
-    @Composable
-    fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>,
-                          onAddTecnico: () -> Unit){
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Spacer(modifier =Modifier.height(32.dp))
-            Text("Lista de técnicos", style = MaterialTheme.typography.bodyLarge)
-            Spacer(modifier = Modifier.height(16.dp))
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ){
-                items(tecnicoList){
-                    TecnicoRow(it)
-                }
-            }
-        }
-
-    }
-
-    @Composable
-    private fun TecnicoRow(tecnico: TecnicoEntity) {
-        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "ID:",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = tecnico.tecnicoId.toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(3f)
-                )
-            }
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Nombre:",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = tecnico.nombre,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(3f)
-                )
-            }
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Sueldo:",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = tecnico.sueldo.toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(3f)
-                )
-            }
-            HorizontalDivider()
-        }
-    }
-
-private suspend fun saveTecnico(tecnico: TecnicoEntity){
-    tecnicoDb.tecnicoDao().save(tecnico)
-}
-
-    @Composable
-    fun AppNavHost(
-        navHostController: NavHostController
-    ){
-        val lifecycleOwner = LocalLifecycleOwner.current
-        val tecnicoList by tecnicoDb.tecnicoDao().getAll()
-            .collectAsStateWithLifecycle(
-                initialValue = emptyList(),
-                lifecycleOwner = lifecycleOwner,
-                minActiveState = Lifecycle.State.STARTED
-            )
-        NavHost(
-
-            navController = navHostController,
-            startDestination = Screen.TecnicoList
-        ){
-            composable<Screen.TecnicoList>{
-                TecnicoListScreen(
-                    tecnicoList = tecnicoList,
-                    onAddTecnico = {navHostController.navigate(Screen.Tecnico(0))}
-                )
-
-            }
-            composable<Screen.Tecnico>{
-                TecnicoScreen(
-                    goTecnicoList = {navHostController.navigate(Screen.TecnicoList)}
-                )
-            }
-        }
-    }
 
 
 
