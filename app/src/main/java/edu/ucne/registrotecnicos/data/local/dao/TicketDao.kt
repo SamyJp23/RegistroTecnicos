@@ -13,7 +13,11 @@ import kotlinx.coroutines.flow.Flow
 interface TicketDao {
     @Upsert
     suspend fun save(ticket: TicketEntity)
+    @Query("SELECT * FROM tickets WHERE tecnicoId = :tecnicoId")
+    fun getTicketsTecnico(tecnicoId: Int): Flow<List<TicketEntity>>
 
+    @Query("UPDATE Tickets SET respuesta = :respuesta WHERE ticketId = :ticketId")
+    suspend fun updateRespuesta(ticketId: Int, respuesta: String)
     @Query(
         """
             SELECT * FROM Tickets

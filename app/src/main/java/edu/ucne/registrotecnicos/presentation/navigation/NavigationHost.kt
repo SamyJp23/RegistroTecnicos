@@ -20,6 +20,7 @@ import edu.ucne.registrotecnicos.data.local.repositories.TicketRepository
 import edu.ucne.registrotecnicos.presentation.Home
 import edu.ucne.registrotecnicos.presentation.tecnico.DeleteTecnicoScreen
 import edu.ucne.registrotecnicos.presentation.tecnico.EditTecnicoScreen
+import edu.ucne.registrotecnicos.presentation.tecnico.TecnicoTicketsScreen
 import edu.ucne.registrotecnicos.presentation.ticket.DeleteTicketScreen
 import edu.ucne.registrotecnicos.presentation.ticket.EditTicketScreen
 
@@ -42,7 +43,7 @@ fun AppNavHost(tecnicoDb: TecnicoDb, navHostController: NavHostController
 
     val scope = rememberCoroutineScope()
     val tecnicoRepository = TecnicoRepository(tecnicoDb)
-    val ticketRepository = TicketRepository(tecnicoDb)
+    val ticketRepository = TicketRepository(tecnicoDb ,tecnicoDb.ticketDao())
     NavHost(
 
         navController = navHostController,
@@ -70,6 +71,9 @@ fun AppNavHost(tecnicoDb: TecnicoDb, navHostController: NavHostController
                 },
                 onDeleteTecnico =  { tecnico ->
                     navHostController.navigate(Screen.DeleteTecnico(tecnico.tecnicoId ?: 0))
+                },
+                        onViewTickets =  { tecnico ->
+                    navHostController.navigate(Screen.TecnicoTickets(tecnico.tecnicoId ?: 0))
                 }
             )
 
@@ -141,6 +145,16 @@ fun AppNavHost(tecnicoDb: TecnicoDb, navHostController: NavHostController
                 tecnicoDb = tecnicoDb,
                 ticketId = args.ticketId,
                 goTicketList = {
+                    navHostController.navigateUp()
+                }
+            )
+        }
+        composable<Screen.TecnicoTickets>{
+            val args = it.toRoute<Screen.TecnicoTickets>()
+            TecnicoTicketsScreen(
+               tecnicoId = args.tecnicoId,
+                ticketRepository = ticketRepository,
+                goTecnicoTickets =  {
                     navHostController.navigateUp()
                 }
             )
