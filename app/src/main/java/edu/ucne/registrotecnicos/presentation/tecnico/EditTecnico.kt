@@ -122,7 +122,7 @@ fun EditTecnicoScreen(
                                                         sueldo = sueldoD
                                                     )
                                                 )
-                                                goTecnicoList() // Regresar a la lista después de guardar
+                                                goTecnicoList()
                                             }
                                         }
                                     }
