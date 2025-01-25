@@ -10,6 +10,9 @@ class TecnicoRepository(
     suspend fun saveTecnico(tecnico: TecnicoEntity){
         tecnicoDb.tecnicoDao().save(tecnico)
     }
+    suspend fun updateTecnico(tecnico: TecnicoEntity) {
+        tecnicoDb.tecnicoDao().update(tecnico)
+    }
 
     suspend fun find(id: Int): TecnicoEntity?{
         return tecnicoDb.tecnicoDao().find(id)

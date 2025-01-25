@@ -3,6 +3,7 @@ package edu.ucne.registrotecnicos.data.local.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
@@ -20,7 +21,8 @@ interface TicketDao {
             LIMIT 1
         """)
     suspend fun find(id: Int): TicketEntity?
-
+    @Update
+    suspend fun update(ticket: TicketEntity)
     @Delete
     suspend fun delete(ticket: TicketEntity)
 

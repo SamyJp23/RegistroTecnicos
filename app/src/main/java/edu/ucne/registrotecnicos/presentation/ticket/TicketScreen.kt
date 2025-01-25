@@ -125,6 +125,18 @@ fun TicketScreen(
                         onValueChange = { descripcion = it },
                         modifier = Modifier.fillMaxWidth()
                     )
+                    OutlinedTextField(
+                        label = { Text("TecnicoId") },
+                        value = tecnicoId,
+                        onValueChange = { tecnicoId = it },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        label = { Text("PrioridadId") },
+                        value = prioridadId,
+                        onValueChange = { prioridadId = it },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     errorMessage?.let {
                         Text(text = it, color = Color.Red)
@@ -142,31 +154,43 @@ fun TicketScreen(
                         val scope = rememberCoroutineScope()
                         OutlinedButton(
                             onClick = {
-                                if (fecha.isBlank()  || cliente.isBlank() || asunto.isBlank() || descripcion.isBlank() || tecnicoId.isBlank()) {
-                                    errorMessage = "Revise que no haya campos vacios."
-                                } else {
+                                if (fecha.isBlank() || cliente.isBlank() || asunto.isBlank() || descripcion.isBlank() || prioridadId.isBlank() || tecnicoId.isBlank()) {
+                                    errorMessage = "Todos los campos son obligatorios y deben estar completos."
+                                }
+                                else {
 
-                                        val prioridad = prioridadId.toInt()
-                                        val tecnicoIdInt = tecnicoId.toInt()
+                                    val prioridad = prioridadId.toIntOrNull()
+                                    val tecnicoIdInt = tecnicoId.toIntOrNull()
+
+                                    if (prioridad == null || tecnicoIdInt == null) {
+
+                                        errorMessage = "Prioridad y Técnico ID deben ser números válidos."
+                                    } else {
                                         scope.launch {
+
                                             ticketRepository.saveTicket(
                                                 TicketEntity(
                                                     fecha = fecha,
-                                                    prioridadId = prioridad,
                                                     cliente = cliente,
                                                     asunto = asunto,
                                                     descripcion = descripcion,
+                                                    prioridadId = prioridad,
                                                     tecnicoId = tecnicoIdInt
                                                 )
                                             )
+
                                             fecha = ""
-                                            prioridadId = ""
                                             cliente = ""
                                             asunto = ""
                                             descripcion = ""
+                                            prioridadId = ""
                                             tecnicoId = ""
-                                        }
 
+                                            errorMessage = "Ticket guardado exitosamente."
+
+                                            goTicketList()
+                                        }
+                                    }
                                 }
                             }
                         ) {

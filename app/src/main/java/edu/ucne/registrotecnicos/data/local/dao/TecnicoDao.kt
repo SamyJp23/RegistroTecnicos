@@ -3,6 +3,7 @@ package edu.ucne.registrotecnicos.data.local.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +20,8 @@ interface TecnicoDao{
             LIMIT 1
         """)
     suspend fun find(id: Int): TecnicoEntity?
-
+    @Update
+    suspend fun update(tecnico: TecnicoEntity)
     @Delete
     suspend fun delete(tecnico: TecnicoEntity)
 

@@ -9,6 +9,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import edu.ucne.registrotecnicos.presentation.tecnico.TecnicoListScreen
 import edu.ucne.registrotecnicos.presentation.tecnico.TecnicoScreen
 import edu.ucne.registrotecnicos.data.local.dao.TecnicoDao
@@ -17,6 +18,10 @@ import edu.ucne.registrotecnicos.data.local.database.TecnicoDb
 import edu.ucne.registrotecnicos.data.local.repositories.TecnicoRepository
 import edu.ucne.registrotecnicos.data.local.repositories.TicketRepository
 import edu.ucne.registrotecnicos.presentation.Home
+import edu.ucne.registrotecnicos.presentation.tecnico.DeleteTecnicoScreen
+import edu.ucne.registrotecnicos.presentation.tecnico.EditTecnicoScreen
+import edu.ucne.registrotecnicos.presentation.ticket.DeleteTicketScreen
+import edu.ucne.registrotecnicos.presentation.ticket.EditTicketScreen
 
 @Composable
 fun AppNavHost(tecnicoDb: TecnicoDb, navHostController: NavHostController
@@ -95,6 +100,46 @@ fun AppNavHost(tecnicoDb: TecnicoDb, navHostController: NavHostController
             TicketScreen( tecnicoDb = tecnicoDb,
                 tecnicoRepository = tecnicoRepository,
                 ticketRepository = ticketRepository,
+                goTicketList = {
+                    navHostController.navigateUp()
+                }
+            )
+        }
+        composable<Screen.EditTecnico>{
+            val args = it.toRoute<Screen.EditTecnico>()
+            EditTecnicoScreen( tecnicoDb = tecnicoDb,
+                tecnicoId = args.tecnicoId ,
+                tecnicoRepository = tecnicoRepository,
+                goTecnicoList = {
+                    navHostController.navigateUp()
+                }
+            )
+        }
+        composable<Screen.EditTicket>{
+            val args = it.toRoute<Screen.EditTicket>()
+            EditTicketScreen( tecnicoDb = tecnicoDb,
+                ticketId = args.ticketId ,
+                ticketRepository = ticketRepository,
+                goTicketList = {
+                    navHostController.navigateUp()
+                }
+            )
+        }
+        composable<Screen.DeleteTecnico>{
+            val args = it.toRoute<Screen.DeleteTecnico>()
+            DeleteTecnicoScreen(
+                tecnicoDb = tecnicoDb,
+                tecnicoId = args.tecnicoId,
+                goTecnicoList = {
+                    navHostController.navigateUp()
+                }
+            )
+        }
+        composable<Screen.DeleteTicket>{
+            val args = it.toRoute<Screen.DeleteTicket>()
+            DeleteTicketScreen(
+                tecnicoDb = tecnicoDb,
+                ticketId = args.ticketId,
                 goTicketList = {
                     navHostController.navigateUp()
                 }
