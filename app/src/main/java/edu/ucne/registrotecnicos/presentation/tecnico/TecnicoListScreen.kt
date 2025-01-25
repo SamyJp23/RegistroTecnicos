@@ -43,6 +43,7 @@ import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>,
                       onAddTecnico: () -> Unit,
                       onDeleteTecnico: (TecnicoEntity) -> Unit,
+                      onViewTickets:(TecnicoEntity) -> Unit,
                       onEditTecnico: (TecnicoEntity) -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -96,7 +97,7 @@ fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(tecnicoList) { tecnico ->
-                                TecnicoRow(tecnico, onEditTecnico, onDeleteTecnico)
+                                TecnicoRow(tecnico, onEditTecnico, onDeleteTecnico, onViewTickets)
                             }
                         }
                     }
@@ -110,14 +111,16 @@ fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>,
 private fun TecnicoRow(
     tecnico: TecnicoEntity,
     onEditTecnico: (TecnicoEntity) -> Unit,
-    onDeleteTecnico: (TecnicoEntity) -> Unit
+    onDeleteTecnico: (TecnicoEntity) -> Unit,
+    onViewTickets:(TecnicoEntity) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)
-        .clickable(onClick = { expanded = !expanded })) {
+        .clickable(onClick = { expanded = !expanded })
+    ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -138,25 +141,31 @@ private fun TecnicoRow(
                 Icon(Icons.Filled.MoreVert, contentDescription = "Más opciones")
             }
         }
+
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(
-                text = {Text("Editar")} ,
-                        onClick = {
-                onEditTecnico(tecnico)
-                expanded = false
-            })
-
-
+                text = {Text("Ver Tickets")},
+                onClick = {
+                    onViewTickets(tecnico)
+                    expanded = false
+                })
+            DropdownMenuItem(
+                text = {Text("Editar")},
+                onClick = {
+                    onEditTecnico(tecnico)
+                    expanded = false
+                })
             DropdownMenuItem(
                 text = {Text("Eliminar")},
                 onClick = {
-                onDeleteTecnico(tecnico)
-                expanded = false
-            })
+                    onDeleteTecnico(tecnico)
+                    expanded = false
+                })
         }
         HorizontalDivider()
+        }
     }
-}
+

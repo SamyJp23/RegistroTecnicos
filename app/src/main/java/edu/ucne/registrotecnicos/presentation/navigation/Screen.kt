@@ -23,6 +23,9 @@ sealed class Screen {
     data class DeleteTecnico(val tecnicoId: Int) : Screen()
 
     @Serializable
+    data class TecnicoTickets(val tecnicoId: Int) : Screen()
+
+    @Serializable
     data class EditTicket(val ticketId: Int) : Screen()
 
     @Serializable
