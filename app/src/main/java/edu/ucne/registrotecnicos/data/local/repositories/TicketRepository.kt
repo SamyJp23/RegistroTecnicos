@@ -13,6 +13,9 @@ class TicketRepository(
     suspend fun saveTicket(ticket: TicketEntity){
         tecnicoDb.ticketDao().save(ticket)
     }
+    suspend fun delete(ticket: TicketEntity){
+        return tecnicoDb.ticketDao().delete(ticket)
+    }
     fun getTicketsTecnico(tecnicoId: Int): Flow<List<TicketEntity>> {
         return ticketDao.getTicketsTecnico(tecnicoId)
     }

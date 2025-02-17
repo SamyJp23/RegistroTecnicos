@@ -73,9 +73,9 @@ dependencies {
 
     //retrofit
     implementation(libs.retrofit)
-    implementation(libs.moshi.kotlin)
+    implementation(libs.moshi.kotlin.v1140)
     implementation(libs.converter.moshi)
-    implementation(libs.logging.interceptor)
+    implementation(libs.loggin.interceptor)
 
 
 

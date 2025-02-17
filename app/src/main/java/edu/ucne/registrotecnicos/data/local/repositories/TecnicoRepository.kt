@@ -17,7 +17,9 @@ class TecnicoRepository(
     suspend fun find(id: Int): TecnicoEntity?{
         return tecnicoDb.tecnicoDao().find(id)
     }
-
+    suspend fun delete(tecnico: TecnicoEntity){
+        return tecnicoDb.tecnicoDao().delete(tecnico)
+    }
     fun getAll(): Flow<List<TecnicoEntity>> {
         return tecnicoDb.tecnicoDao().getAll()
     }
