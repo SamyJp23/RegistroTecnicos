@@ -16,7 +16,7 @@ class TecnicoViewModel @Inject constructor(
     private val tecnicoRepository: TecnicoRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
+    private val _uiState = MutableStateFlow(TecnicoUiState())
     val uiState get() = _uiState.asStateFlow()
 
     init {
@@ -118,16 +118,8 @@ class TecnicoViewModel @Inject constructor(
         }
     }
 
-    data class UiState(
-        val tecnicoId: Int? = null,
-        val nombre: String = "",
-        val sueldo: Double? = null,
-        val errorMessage: String? = null,
-        val successMessage: String? = null,
-        val tecnicos: List<TecnicoEntity> = emptyList()
-    )
 
-    fun UiState.toEntity() = TecnicoEntity(
+    fun TecnicoUiState.toEntity() = TecnicoEntity(
         tecnicoId = tecnicoId,
         nombre = nombre,
         sueldo = sueldo ?: 0.0

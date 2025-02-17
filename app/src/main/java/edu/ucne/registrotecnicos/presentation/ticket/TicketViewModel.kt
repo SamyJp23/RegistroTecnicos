@@ -19,7 +19,7 @@ class TicketViewModel @Inject constructor(
     private val tecnicoRepository: TecnicoRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
+    private val _uiState = MutableStateFlow(TicketUiState())
     val uiState get() = _uiState.asStateFlow()
 
     init {
@@ -29,7 +29,7 @@ class TicketViewModel @Inject constructor(
 
     fun saveTicket() {
         viewModelScope.launch {
-            // Validate the form
+
             if (_uiState.value.cliente.isBlank() ||
                 _uiState.value.asunto.isBlank() ||
                 _uiState.value.fecha.isBlank() ||
@@ -98,13 +98,13 @@ class TicketViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 ticketRepository.delete(_uiState.value.toEntity())
-                // On success
+
                 _uiState.update {
                     it.copy(mensajeExito = "Ticket eliminado con éxito.", mensajeError = null)
                 }
                 nuevoTicket()
             } catch (e: Exception) {
-                // On error
+
                 _uiState.update {
                     it.copy(mensajeError = "Error al eliminar el ticket: ${e.message}", mensajeExito = null)
                 }
@@ -166,22 +166,9 @@ class TicketViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(prioridadId = newValue)
     }
 
-    data class UiState(
-        val ticketId: Int? = null,
-        val fecha: String = "",
-        val cliente: String = "",
-        val asunto: String = "",
-        val descripcion: String = "",
-        val tecnicoId: Int? = null,
-        val prioridadId: Int? = null,
-        val mensajeError: String? = null,
-        val mensajeExito: String? = null,
-        val tickets: List<TicketEntity> = emptyList(),
-        val tecnicos: List<TecnicoEntity> = emptyList()
-    )
 
 
-    fun UiState.toEntity() = TicketEntity(
+    fun TicketUiState.toEntity() = TicketEntity(
         ticketId = ticketId,
         fecha = fecha,
         cliente = cliente,
