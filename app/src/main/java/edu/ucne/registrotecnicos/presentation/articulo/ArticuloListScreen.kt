@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -48,54 +49,62 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
+import edu.ucne.registrotecnicos.data.remote.dto.ArticuloDto
+import edu.ucne.registrotecnicos.presentation.articulo.ArticuloUiState
+import edu.ucne.registrotecnicos.presentation.articulo.ArticuloViewModel
 import edu.ucne.registrotecnicos.presentation.ticket.TicketUiState
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TicketListScreen(
-    viewModel: TicketViewModel = hiltViewModel(),
-    createTicket: () -> Unit,
+fun ArticuloListScreen(
+    viewModel: ArticuloViewModel = hiltViewModel(),
+    createArticulo: () -> Unit,
     goToMenu: () -> Unit,
-    goToTicket: (Int) -> Unit
+    goToArticulo: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Lista de Tickets") }
-            )
+        topBar = { TopAppBar(
+            title = { Text("Lista de Articulos") },
+            actions = {
+                IconButton(onClick = { viewModel.refreshArticulos() }) {
+                    Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Refrescar")
+                }
+            }
+        )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { createTicket() },
+                onClick = { createArticulo() },
                 containerColor = Color.Blue,
                 contentColor = Color.White
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Crear Ticket"
+                    contentDescription = "Crear Articulo"
                 )
             }
-        }
+
+        },
+
     ) { innerPadding ->
-        TicketListBodyScreen(
+        ArticuloListBodyScreen(
             uiState = uiState,
-            createTicket = createTicket,
+            createArticulo = createArticulo,
             goToMenu = goToMenu,
-            goToTicket = goToTicket,
+            goToArticulo = goToArticulo,
             modifier = Modifier.padding(innerPadding)
         )
     }
 }
 
 @Composable
-fun TicketListBodyScreen(
-    uiState: TicketUiState,
-    createTicket: () -> Unit,
+fun ArticuloListBodyScreen(
+    uiState: ArticuloUiState,
+    createArticulo: () -> Unit,
     goToMenu: () -> Unit,
-    goToTicket: (Int) -> Unit,
+    goToArticulo: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -108,8 +117,8 @@ fun TicketListBodyScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
 
-                items(uiState.tickets) {
-                    TicketRow(it, goToTicket)
+                items(uiState.articulos) {
+                    ArticuloRow(it, goToArticulo)
                 }
             }
         }
@@ -119,9 +128,9 @@ fun TicketListBodyScreen(
 
 
 @Composable
-private fun TicketRow(
-    it: TicketEntity,
-    goToTicket: (Int) -> Unit
+private fun ArticuloRow(
+    it: ArticuloDto,
+    goToArticulo: (Int) -> Unit
 ) {
 
     Card(
@@ -129,7 +138,7 @@ private fun TicketRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 8.dp)
-            .clickable { goToTicket(it.ticketId!!) },
+            .clickable { goToArticulo(it.articuloId) },
         colors = CardDefaults.cardColors(containerColor = verde),
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
@@ -146,24 +155,10 @@ private fun TicketRow(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "TicketId: ${it.tecnicoId}",
+                    text = "ArticuloId: ${it.articuloId}",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                )
-                Text(
-                    text = "Cliente: ${it.cliente}",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        color = Color.White
-                    )
-                )
-                Text(
-                    text = "Asunto: ${it.asunto}",
-                    style = TextStyle(
-                        fontSize = 14.sp,
                         color = Color.White
                     )
                 )
@@ -175,29 +170,33 @@ private fun TicketRow(
                     )
                 )
                 Text(
-                    text = "Fecha: ${it.fecha}",
+                    text = "Costo: ${it.costo}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+
+                Text(
+                    text = "Precio: ${it.precio}",
                     style = TextStyle(
                         fontSize = 14.sp,
                         color = Color.White
                     )
                 )
                 Text(
-                    text = "PrioridadId: ${it.prioridadId}",
+                    text = "Ganancia: ${it.ganancia}",
                     style = TextStyle(
                         fontSize = 14.sp,
                         color = Color.White
                     )
                 )
-                Text(
-                    text = "Tecnico: ${it.tecnicoId}",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        color = Color.White
-                    )
-                )
+
+
             }
         }
     }
 }
+
 
 

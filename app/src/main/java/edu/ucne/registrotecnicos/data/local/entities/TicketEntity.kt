@@ -13,7 +13,7 @@ data class TicketEntity(
     val asunto: String = "",
     val descripcion: String = "",
     val prioridadId: Int? = null,
-    val tecnicoId: Int,
+    val tecnicoId: Int? = null,
     val respuesta: String =""
 
 )

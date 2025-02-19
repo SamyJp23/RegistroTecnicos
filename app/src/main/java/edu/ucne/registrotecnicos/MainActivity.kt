@@ -57,6 +57,7 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Upsert
+import dagger.hilt.android.AndroidEntryPoint
 import edu.ucne.registrotecnicos.data.local.database.TecnicoDb
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.presentation.navigation.AppNavHost
@@ -66,6 +67,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.time.format.TextStyle
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var tecnicoDb: TecnicoDb
     override fun onCreate(savedInstanceState: Bundle?) {
