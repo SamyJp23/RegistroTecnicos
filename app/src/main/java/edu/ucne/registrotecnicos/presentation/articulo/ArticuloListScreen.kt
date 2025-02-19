@@ -17,11 +17,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -29,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,10 +48,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
+import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
 import edu.ucne.registrotecnicos.data.remote.dto.ArticuloDto
 import edu.ucne.registrotecnicos.presentation.articulo.ArticuloUiState
 import edu.ucne.registrotecnicos.presentation.articulo.ArticuloViewModel
+import edu.ucne.registrotecnicos.presentation.ticket.TicketUiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticuloListScreen(
     viewModel: ArticuloViewModel = hiltViewModel(),
@@ -57,12 +63,40 @@ fun ArticuloListScreen(
     goToArticulo: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ArticuloListBodyScreen(
-        uiState,
-        createArticulo,
-        goToMenu,
-        goToArticulo
-    )
+
+    Scaffold(
+        topBar = { TopAppBar(
+            title = { Text("Lista de Articulos") },
+            actions = {
+                IconButton(onClick = { viewModel.refreshArticulos() }) {
+                    Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Refrescar")
+                }
+            }
+        )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { createArticulo() },
+                containerColor = Color.Blue,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Crear Articulo"
+                )
+            }
+
+        },
+
+    ) { innerPadding ->
+        ArticuloListBodyScreen(
+            uiState = uiState,
+            createArticulo = createArticulo,
+            goToMenu = goToMenu,
+            goToArticulo = goToArticulo,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
 }
 
 @Composable
@@ -70,10 +104,11 @@ fun ArticuloListBodyScreen(
     uiState: ArticuloUiState,
     createArticulo: () -> Unit,
     goToMenu: () -> Unit,
-    goToArticulo: (Int) -> Unit
+    goToArticulo: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -81,117 +116,87 @@ fun ArticuloListBodyScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                item {
-                    ArticuloHeaderRow()
-                }
+
                 items(uiState.articulos) {
                     ArticuloRow(it, goToArticulo)
                 }
             }
         }
-
-        FloatingActionButton(
-            onClick = { createArticulo() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            containerColor = Color.Gray,
-            contentColor = Color.White
-
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Crear Tecnico"
-            )
-        }
     }
 }
 
 
-@Composable
-private fun ArticuloHeaderRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-            .background(Color.Gray)
-            .padding(vertical = 30.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.weight(1f)
-                .padding(end = 8.dp),
-            text = "ID",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Nombre",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Sueldo",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-
-
-    }
-    Divider(modifier = Modifier.padding(horizontal = 16.dp))
-}
 
 @Composable
 private fun ArticuloRow(
     it: ArticuloDto,
     goToArticulo: (Int) -> Unit
 ) {
+
     Card(
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable {
-                goToArticulo(it.articuloId!!)
-
-            },
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Gray
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = MaterialTheme.shapes.medium
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .clickable { goToArticulo(it.articuloId) },
+        colors = CardDefaults.cardColors(containerColor = verde),
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
+                .background(verde),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = it.articuloId.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.descripcion,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
+            Column(
+                modifier = Modifier.weight(5f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "ArticuloId: ${it.articuloId}",
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Descripcion: ${it.descripcion}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Costo: ${it.costo}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
 
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.costo.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
+                Text(
+                    text = "Precio: ${it.precio}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Ganancia: ${it.ganancia}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
 
 
+            }
         }
     }
 }
+
+
 

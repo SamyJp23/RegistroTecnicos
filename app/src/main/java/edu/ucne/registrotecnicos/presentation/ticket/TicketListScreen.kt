@@ -22,6 +22,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +50,8 @@ import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
 import edu.ucne.registrotecnicos.presentation.ticket.TicketUiState
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TicketListScreen(
     viewModel: TicketViewModel = hiltViewModel(),
@@ -56,12 +60,34 @@ fun TicketListScreen(
     goToTicket: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    TicketListBodyScreen(
-        uiState,
-        createTicket,
-        goToMenu,
-        goToTicket
-    )
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Lista de Tickets") }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { createTicket() },
+                containerColor = Color.Blue,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Crear Ticket"
+                )
+            }
+        }
+    ) { innerPadding ->
+        TicketListBodyScreen(
+            uiState = uiState,
+            createTicket = createTicket,
+            goToMenu = goToMenu,
+            goToTicket = goToTicket,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
 }
 
 @Composable
@@ -69,10 +95,11 @@ fun TicketListBodyScreen(
     uiState: TicketUiState,
     createTicket: () -> Unit,
     goToMenu: () -> Unit,
-    goToTicket: (Int) -> Unit
+    goToTicket: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -80,169 +107,97 @@ fun TicketListBodyScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                item {
-                    TicketHeaderRow()
-                }
+
                 items(uiState.tickets) {
                     TicketRow(it, goToTicket)
                 }
             }
         }
-
-        FloatingActionButton(
-            onClick = { createTicket() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            containerColor = Color.Gray,
-            contentColor = Color.White
-
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Crear Tecnico"
-            )
-        }
     }
 }
 
 
-@Composable
-private fun TicketHeaderRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-            .background(Color.Gray)
-            .padding(vertical = 30.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.weight(1f)
-                .padding(end = 8.dp),
-            text = "ID",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Fecha",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Cliente",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Asunto",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Descripcion",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "PrioridadId",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Tecnico",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-
-
-    }
-    Divider(modifier = Modifier.padding(horizontal = 16.dp))
-}
 
 @Composable
 private fun TicketRow(
     it: TicketEntity,
     goToTicket: (Int) -> Unit
 ) {
+
     Card(
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable {
-                goToTicket(it.ticketId!!)
-
-            },
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Gray
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = MaterialTheme.shapes.medium
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .clickable { goToTicket(it.ticketId!!) },
+        colors = CardDefaults.cardColors(containerColor = verde),
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
+                .background(verde),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = it.ticketId.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.fecha,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.cliente,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.asunto,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.descripcion,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.prioridadId.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.tecnicoId.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-
-
+            Column(
+                modifier = Modifier.weight(5f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "TicketId: ${it.tecnicoId}",
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Cliente: ${it.cliente}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Asunto: ${it.asunto}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Descripcion: ${it.descripcion}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Fecha: ${it.fecha}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "PrioridadId: ${it.prioridadId}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Tecnico: ${it.tecnicoId}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+            }
         }
     }
 }
+
 

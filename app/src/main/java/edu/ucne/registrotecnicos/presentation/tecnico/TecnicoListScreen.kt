@@ -22,6 +22,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +48,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 
+val verde = Color(0xFF016914)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TecnicoListScreen(
     viewModel: TecnicoViewModel = hiltViewModel(),
@@ -54,12 +58,35 @@ fun TecnicoListScreen(
     goToTecnico: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    TecnicoListBodyScreen(
-        uiState,
-        createTecnico,
-        goToMenu,
-        goToTecnico
-    )
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Lista de Técnicos") }
+
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { createTecnico() },
+                containerColor = Color.Blue,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Crear Tecnico"
+                )
+            }
+        }
+    ) { innerPadding ->
+        TecnicoListBodyScreen(
+            uiState = uiState,
+            createTecnico = createTecnico,
+            goToMenu = goToMenu,
+            goToTecnico = goToTecnico,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
 }
 
 @Composable
@@ -67,10 +94,11 @@ fun TecnicoListBodyScreen(
     uiState: TecnicoUiState,
     createTecnico: () -> Unit,
     goToMenu: () -> Unit,
-    goToTecnico: (Int) -> Unit
+    goToTecnico: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -78,117 +106,67 @@ fun TecnicoListBodyScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                item {
-                    TecnicoHeaderRow()
-                }
+
                 items(uiState.tecnicos) {
                     TecnicoRow(it, goToTecnico)
                 }
             }
         }
-
-        FloatingActionButton(
-            onClick = { createTecnico() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            containerColor = Color.Gray,
-            contentColor = Color.White
-
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Crear Tecnico"
-            )
-        }
     }
 }
 
 
-@Composable
-private fun TecnicoHeaderRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-            .background(Color.Gray)
-            .padding(vertical = 30.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.weight(1f)
-                .padding(end = 8.dp),
-            text = "ID",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Nombre",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = "Sueldo",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
-
-        )
-
-
-    }
-    Divider(modifier = Modifier.padding(horizontal = 16.dp))
-}
 
 @Composable
 private fun TecnicoRow(
     it: TecnicoEntity,
     goToTecnico: (Int) -> Unit
 ) {
+
     Card(
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable {
-                goToTecnico(it.tecnicoId!!)
-
-            },
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Gray
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = MaterialTheme.shapes.medium
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .clickable { goToTecnico(it.tecnicoId!!) },
+        colors = CardDefaults.cardColors(containerColor = verde),
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
+                .background(verde),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = it.tecnicoId.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.nombre,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-
-            Text(
-                modifier = Modifier.weight(2f),
-                text = it.sueldo.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-
-
+            Column(
+                modifier = Modifier.weight(5f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "TécnicoId: ${it.tecnicoId}",
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Nombre: ${it.nombre}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Sueldo: ${it.sueldo}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                )
+            }
         }
     }
 }
-

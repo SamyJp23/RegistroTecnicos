@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -127,6 +128,21 @@ fun ArticuloBodyScreen(
                     )
 
                     OutlinedTextField(
+                        label = { Text(text = "Precio") },
+                        value = uiState.precio,
+                        onValueChange = viewModel::onPrecioChange,
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            disabledTextColor = Color.Black,
+                            focusedLabelColor = Color.Black,
+                            unfocusedLabelColor = Color.Black,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = Color.Black
+                        )
+                    )
+
+                    OutlinedTextField(
                         label = { Text(text = "Ganancia") },
                         value = uiState.ganancia,
                         onValueChange = viewModel::onGananciaChange,
@@ -141,20 +157,6 @@ fun ArticuloBodyScreen(
                         )
                     )
 
-                    OutlinedTextField(
-                        label = { Text(text = "Precio") },
-                        value = uiState.precio,
-                        onValueChange = viewModel::onPrecioChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            disabledTextColor = Color.Black,
-                            focusedLabelColor = Color.Black,
-                            unfocusedLabelColor = Color.Black,
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = Color.Black
-                        )
-                    )
 
 
 
@@ -170,14 +172,19 @@ fun ArticuloBodyScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        OutlinedButton(onClick = { goBackToList() }) {
+                        OutlinedButton(
+                            onClick = { goBackToList() },
+                            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Blue)
+                        ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Go back",
-                                tint = Color.Black
+                                tint = Color.White
                             )
-                            Text(text = "Atrás",
-                                color = Color.Black)
+                            Text(
+                                text = "Atrás",
+                                color = Color.White
+                            )
                         }
 
                         OutlinedButton(
@@ -186,15 +193,37 @@ fun ArticuloBodyScreen(
                                     viewModel.saveArticulo()
                                     goBackToList()
                                 }
-                            }) {
+                            }, colors = ButtonDefaults.outlinedButtonColors(containerColor = verde)
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = "Save button",
-                                tint = Color.Black
+                                tint = Color.White
 
                             )
-                            Text(text = "Guardar",
-                                color = Color.Black)
+                            Text(
+                                text = "Guardar",
+                                color = Color.White
+                            )
+
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.delete(articuloId)
+                                goBackToList()
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Red)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete button",
+                                tint = Color.White
+
+                            )
+                            Text(
+                                text = "Eliminar",
+                                color = Color.White
+                            )
                         }
                     }
                 }

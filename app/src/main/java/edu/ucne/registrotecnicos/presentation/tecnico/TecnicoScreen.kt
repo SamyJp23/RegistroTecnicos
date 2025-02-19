@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -136,14 +138,17 @@ fun TecnicoBodyScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        OutlinedButton(onClick = { goBackToList() }) {
+                        OutlinedButton(
+                            onClick = { goBackToList() },
+                            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Blue)
+                      ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Go back",
-                                tint = Color.Black
+                                tint = Color.White
                             )
                             Text(text = "Atrás",
-                                color = Color.Black)
+                                color = Color.White)
                         }
 
                         OutlinedButton(
@@ -152,31 +157,31 @@ fun TecnicoBodyScreen(
                                     viewModel.saveTecnico()
                                     goBackToList()
                                 }
-                            }) {
+                            },colors = ButtonDefaults.outlinedButtonColors(containerColor = verde)) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = "Save button",
-                                tint = Color.Black
+                                tint = Color.White
 
                             )
                             Text(text = "Guardar",
-                                color = Color.Black)
+                                color = Color.White)
                         }
 
                         OutlinedButton(
                             onClick = {
                                 viewModel.deleteTecnico()
                                 goBackToList()
-                            }) {
+                            },colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Red)) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete button",
-                                tint = Color.Black
+                                tint = Color.White
 
                             )
                             Text(
-                                text = "",
-                                color = Color.Black)
+                                text = "Eliminar",
+                                color = Color.White)
                         }
                     }
                 }

@@ -37,12 +37,14 @@ class ArticuloViewModel @Inject constructor(
         }
     }
 
-    fun delete(id: Int) {
+    fun delete(articuloId: Int) {
         viewModelScope.launch {
-            articuloRepository.delete(id)
+            articuloRepository.delete(articuloId)
         }
     }
-
+    fun refreshArticulos() {
+        getArticulos()
+    }
     fun update() {
         viewModelScope.launch {
             articuloRepository.update(
@@ -74,37 +76,18 @@ class ArticuloViewModel @Inject constructor(
     fun onCostoChange(costo: String) {
         _uiState.update {
             val costoDouble = costo.toDoubleOrNull()
-            val gananciaDouble = it.ganancia.toDoubleOrNull()
-            val precio = if (costoDouble != null && gananciaDouble != null)
-                (costoDouble * gananciaDouble / 100) + costoDouble
-            else null
+            val precioDouble = it.precio.toDoubleOrNull()
+
+            val gananciaDouble = if (costoDouble != null && precioDouble != null && costoDouble > 0) {
+                ((precioDouble - costoDouble) / costoDouble) * 100
+            } else null
 
             it.copy(
                 costo = costo,
-                precio = precio?.toString() ?: "",
+                ganancia = gananciaDouble?.toString() ?: "",
                 errorMessage = when {
                     costoDouble == null -> "Valor no numérico"
                     costoDouble <= 0 -> "Debe ingresar un valor mayor a 0"
-                    else -> null
-                }
-            )
-        }
-    }
-
-    fun onGananciaChange(ganancia: String) {
-        _uiState.update {
-            val gananciaDouble = ganancia.toDoubleOrNull()
-            val costoDouble = it.costo.toDoubleOrNull()
-            val precio = if (costoDouble != null && gananciaDouble != null)
-                (costoDouble * gananciaDouble / 100) + costoDouble
-            else null
-
-            it.copy(
-                ganancia = ganancia,
-                precio = precio?.toString() ?: "",
-                errorMessage = when {
-                    gananciaDouble == null -> "Valor no numérico"
-                    gananciaDouble < 0 -> "Debe ser 0 o mayor"
                     else -> null
                 }
             )
@@ -115,18 +98,38 @@ class ArticuloViewModel @Inject constructor(
         _uiState.update {
             val precioDouble = precio.toDoubleOrNull()
             val costoDouble = it.costo.toDoubleOrNull()
-            val gananciaDouble = it.ganancia.toDoubleOrNull()
 
-            val calculatedPrecio = if (precioDouble != null) precioDouble
-            else if (costoDouble != null && gananciaDouble != null)
-                (costoDouble * gananciaDouble / 100) + costoDouble
-            else null
+            val gananciaDouble = if (costoDouble != null && precioDouble != null && costoDouble > 0) {
+                ((precioDouble - costoDouble) / costoDouble) * 100
+            } else null
 
             it.copy(
-                precio = calculatedPrecio?.toString() ?: "",
+                precio = precio,
+                ganancia = gananciaDouble?.toString() ?: "",
                 errorMessage = when {
-                    precioDouble == null && calculatedPrecio == null -> "Valor no numérico"
-                    precioDouble != null && precioDouble <= 0 -> "Debe ingresar un valor mayor a 0"
+                    precioDouble == null -> "Valor no numérico"
+                    precioDouble <= 0 -> "Debe ingresar un valor mayor a 0"
+                    else -> null
+                }
+            )
+        }
+    }
+
+    fun onGananciaChange(ganancia: String) {
+        _uiState.update {
+            val gananciaDouble = ganancia.toDoubleOrNull()
+            val costoDouble = it.costo.toDoubleOrNull()
+
+            val precio = if (costoDouble != null && gananciaDouble != null) {
+                (costoDouble * gananciaDouble / 100) + costoDouble
+            } else null
+
+            it.copy(
+                ganancia = ganancia,
+                precio = precio?.toString() ?: "",
+                errorMessage = when {
+                    gananciaDouble == null -> "Valor no numérico"
+                    gananciaDouble < 0 -> "Debe ser 0 o mayor"
                     else -> null
                 }
             )

@@ -36,7 +36,6 @@ fun Home(
             modifier = Modifier.padding(vertical = 20.dp)
         )
 
-        // Organizing cards in two columns
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 MenuCard(
@@ -62,7 +61,7 @@ fun Home(
                     backgroundColor = verde,
                     contentColor = MaterialTheme.colorScheme.onTertiary
                 )
-                Spacer(modifier = Modifier.width(50.dp)) // Use a Spacer to fill the space if you have an odd number of cards
+                Spacer(modifier = Modifier.width(50.dp))
             }
         }
     }
@@ -78,8 +77,8 @@ fun MenuCard(
 ) {
     Card(
         modifier = Modifier
-            .width(160.dp) // Set a fixed width for each card
-            .height(160.dp) // Set a fixed height to make it square
+            .width(160.dp)
+            .height(160.dp)
             .padding(vertical = 8.dp)
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),

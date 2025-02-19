@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -159,6 +160,14 @@ fun TicketBodyScreen(
 
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            disabledTextColor = Color.Black,
+                            focusedLabelColor = Color.Black,
+                            unfocusedLabelColor = Color.Black,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = Color.Black
+                        ),
                         label = { Text(text = "TecnicoId") },
                         value = uiState.tecnicoId?.toString() ?: "",
                         onValueChange = { input ->
@@ -172,6 +181,14 @@ fun TicketBodyScreen(
                     )
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            disabledTextColor = Color.Black,
+                            focusedLabelColor = Color.Black,
+                            unfocusedLabelColor = Color.Black,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = Color.Black
+                        ),
                         label = { Text(text = "PrioridadId") },
                         value = uiState.prioridadId?.toString() ?: "",
                         onValueChange = { input ->
@@ -196,14 +213,15 @@ fun TicketBodyScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        OutlinedButton(onClick = { goBackToList() }) {
+                        OutlinedButton(
+                            onClick = { goBackToList() },colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Blue)) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Go back",
-                                tint = Color.Black
+                                tint = Color.White
                             )
                             Text(text = "Atrás",
-                                color = Color.Black)
+                                color = Color.White)
                         }
 
                         OutlinedButton(
@@ -212,31 +230,31 @@ fun TicketBodyScreen(
                                     viewModel.saveTicket()
                                     goBackToList()
                                 }
-                            }) {
+                            },colors = ButtonDefaults.outlinedButtonColors(containerColor = verde)) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = "Save button",
-                                tint = Color.Black
+                                tint = Color.White
 
                             )
                             Text(text = "Guardar",
-                                color = Color.Black)
+                                color = Color.White)
                         }
 
                         OutlinedButton(
                             onClick = {
                                 viewModel.deleteTicket()
                                 goBackToList()
-                            }) {
+                            },colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Red)) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete button",
-                                tint = Color.Black
+                                tint = Color.White
 
                             )
                             Text(
-                                text = "",
-                                color = Color.Black)
+                                text = "Eliminar",
+                                color = Color.White)
                         }
                     }
                 }
