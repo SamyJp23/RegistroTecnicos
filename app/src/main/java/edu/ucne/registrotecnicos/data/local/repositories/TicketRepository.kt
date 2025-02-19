@@ -5,10 +5,11 @@ import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
 import edu.ucne.registrotecnicos.data.local.dao.TicketDao
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class TicketRepository(
-    private val tecnicoDb: TecnicoDb,
-    private val ticketDao: TicketDao
+class TicketRepository @Inject constructor(
+    private val tecnicoDb: TecnicoDb
+
 ){
     suspend fun saveTicket(ticket: TicketEntity){
         tecnicoDb.ticketDao().save(ticket)
@@ -17,10 +18,10 @@ class TicketRepository(
         return tecnicoDb.ticketDao().delete(ticket)
     }
     fun getTicketsTecnico(tecnicoId: Int): Flow<List<TicketEntity>> {
-        return ticketDao.getTicketsTecnico(tecnicoId)
+        return tecnicoDb.ticketDao().getTicketsTecnico(tecnicoId)
     }
     suspend fun responderTicket(ticketId: Int, respuesta: String) {
-        ticketDao.updateRespuesta(ticketId, respuesta)
+        tecnicoDb.ticketDao().updateRespuesta(ticketId, respuesta)
     }
     suspend fun updateTicket(ticket: TicketEntity) {
         tecnicoDb.ticketDao().update(ticket)

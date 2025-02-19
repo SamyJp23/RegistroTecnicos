@@ -3,8 +3,9 @@ package edu.ucne.registrotecnicos.data.local.repositories
 import edu.ucne.registrotecnicos.data.local.database.TecnicoDb
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class TecnicoRepository(
+class TecnicoRepository @Inject constructor(
     private val tecnicoDb: TecnicoDb
 ) {
     suspend fun saveTecnico(tecnico: TecnicoEntity){

@@ -1,0 +1,108 @@
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+
+val verde = Color(0xFF016914)
+
+@Composable
+fun Home(
+    goToTecnico: () -> Unit,
+    goToTicket: () -> Unit,
+    goToArticulo: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp).
+            background(Color.White),
+                horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Registro Tecnicos/Tickets",
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(vertical = 20.dp)
+        )
+
+        // Organizing cards in two columns
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                MenuCard(
+                    title = "Técnicos",
+                    icon = Icons.Filled.Person,
+                    onClick = goToTecnico,
+                    backgroundColor = verde,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+                MenuCard(
+                    title = "Tickets",
+                    icon = Icons.Filled.MailOutline,
+                    onClick = goToTicket,
+                    backgroundColor = verde,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                )
+            }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                MenuCard(
+                    title = "Articulos",
+                    icon = Icons.Filled.ShoppingCart,
+                    onClick = goToArticulo,
+                    backgroundColor = verde,
+                    contentColor = MaterialTheme.colorScheme.onTertiary
+                )
+                Spacer(modifier = Modifier.width(50.dp)) // Use a Spacer to fill the space if you have an odd number of cards
+            }
+        }
+    }
+}
+
+@Composable
+fun MenuCard(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    backgroundColor: Color,
+    contentColor: Color
+) {
+    Card(
+        modifier = Modifier
+            .width(160.dp) // Set a fixed width for each card
+            .height(160.dp) // Set a fixed height to make it square
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = contentColor,
+                modifier = Modifier.size(40.dp)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = contentColor
+            )
+        }
+    }
+}

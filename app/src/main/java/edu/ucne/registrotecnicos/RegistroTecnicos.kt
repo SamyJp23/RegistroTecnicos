@@ -1,4 +1,8 @@
 package edu.ucne.registrotecnicos
 
-class RegistroTecnicos {
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class RegistroTecnicos : Application() {
 }

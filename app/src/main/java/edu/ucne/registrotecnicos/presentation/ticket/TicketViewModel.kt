@@ -1,4 +1,4 @@
-package edu.ucne.registrotecnicos.presentation.ticket
+package edu.ucne.registrotecnicos.presentation.tecnico
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +7,7 @@ import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
 import edu.ucne.registrotecnicos.data.local.repositories.TecnicoRepository
 import edu.ucne.registrotecnicos.data.local.repositories.TicketRepository
+import edu.ucne.registrotecnicos.presentation.ticket.TicketUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,8 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TicketViewModel @Inject constructor(
-    private val ticketRepository: TicketRepository,
-    private val tecnicoRepository: TecnicoRepository
+    private val ticketRepository: TicketRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TicketUiState())
@@ -24,53 +24,54 @@ class TicketViewModel @Inject constructor(
 
     init {
         getTickets()
-        getTecnicos()
     }
 
     fun saveTicket() {
         viewModelScope.launch {
-
-            if (_uiState.value.cliente.isBlank() ||
-                _uiState.value.asunto.isBlank() ||
-                _uiState.value.fecha.isBlank() ||
-                _uiState.value.tecnicoId == null ||
-                _uiState.value.prioridadId == null
-            ) {
+            if (_uiState.value.descripcion.isBlank() || _uiState.value.fecha == null) {
                 _uiState.update {
-                    it.copy(mensajeError = "Todos los campos son obligatorios.", mensajeExito = null)
+                    it.copy(errorMessage = "Todos los campos son obligatorios.", successMessage = null)
                 }
                 return@launch
             }
 
             try {
-
                 ticketRepository.saveTicket(_uiState.value.toEntity())
-
                 _uiState.update {
-                    it.copy(mensajeExito = "Ticket guardado con éxito.", mensajeError = null)
+                    it.copy(successMessage = "Técnico guardado correctamente.", errorMessage = null)
                 }
                 nuevoTicket()
             } catch (e: Exception) {
-
                 _uiState.update {
-                    it.copy(mensajeError = "Error al guardar el ticket: ${e.message}", mensajeExito = null)
+                    it.copy(errorMessage = "Error al guardar el técnico: ${e.message}", successMessage = null)
                 }
             }
         }
     }
+    fun find(ticketId: Int){
+        viewModelScope.launch {
+            if (ticketId > 0) {
+                val ticket = ticketRepository.find(ticketId)
+                if (ticket != null) {
+                    _uiState.update {
+                        it.copy(
+                            ticketId = ticket.ticketId,
+                            descripcion = ticket.descripcion
 
+                        )
+                    }
+                }
+            }
+        }
+    }
     fun nuevoTicket() {
         _uiState.update {
             it.copy(
                 ticketId = null,
-                fecha = "",
-                cliente = "",
-                asunto = "",
                 descripcion = "",
-                tecnicoId = null,
-                prioridadId = null,
-                mensajeError = null,
-                mensajeExito = null
+                fecha = "",
+                errorMessage = null,
+                successMessage = null
             )
         }
     }
@@ -82,34 +83,44 @@ class TicketViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         ticketId = ticket?.ticketId,
-                        fecha = ticket?.fecha ?: "",
-                        cliente = ticket?.cliente ?: "",
-                        asunto = ticket?.asunto ?: "",
-                        descripcion = ticket?.descripcion ?: "",
-                        tecnicoId = ticket?.tecnicoId,
-                        prioridadId = ticket?.prioridadId
+                        descripcion  = ticket?.descripcion ?: "",
+                        fecha = ticket?.fecha ?:""
                     )
                 }
             }
         }
     }
 
-    fun deleteTicket() {
+  fun deleteTicket() {
         viewModelScope.launch {
             try {
                 ticketRepository.delete(_uiState.value.toEntity())
-
                 _uiState.update {
-                    it.copy(mensajeExito = "Ticket eliminado con éxito.", mensajeError = null)
+                    it.copy(successMessage = "Técnico eliminado correctamente.", errorMessage = null)
                 }
                 nuevoTicket()
             } catch (e: Exception) {
-
                 _uiState.update {
-                    it.copy(mensajeError = "Error al eliminar el ticket: ${e.message}", mensajeExito = null)
+                    it.copy(errorMessage = "Error al eliminar el técnico: ${e.message}", successMessage = null)
                 }
             }
         }
+    }
+
+    fun isValid(): Boolean {
+        val descripcionValid = _uiState.value.descripcion.isNotBlank()
+
+
+        _uiState.update {
+            it.copy(
+                errorMessage = when {
+                    !descripcionValid -> "Debes rellenar el campo nombre"
+                    else -> null
+                }
+            )
+        }
+
+        return descripcionValid
     }
 
     fun getTickets() {
@@ -122,13 +133,15 @@ class TicketViewModel @Inject constructor(
         }
     }
 
-    fun getTecnicos() {
-        viewModelScope.launch {
-            tecnicoRepository.getAll().collect { tecnicos ->
-                _uiState.update {
-                    it.copy(tecnicos = tecnicos)
-                }
-            }
+   fun onDescripcionChange(descripcion: String) {
+        _uiState.update {
+            it.copy(descripcion = descripcion)
+        }
+    }
+
+    fun onAsuntoChange(asunto: String) {
+        _uiState.update {
+            it.copy(asunto = asunto)
         }
     }
 
@@ -144,28 +157,33 @@ class TicketViewModel @Inject constructor(
         }
     }
 
-    fun onAsuntoChange(asunto: String) {
+
+    fun onTecnicoChange(newTecnico: String) {
+        val tecnicoInt = newTecnico.toIntOrNull()
         _uiState.update {
-            it.copy(asunto = asunto)
+            it.copy(tecnicoId = tecnicoInt)
         }
     }
 
-    fun onDescripcionChange(descripcion: String) {
+    fun onPrioridadChange(newPrioridad: String) {
+        val prioridadInt = newPrioridad.toIntOrNull()
         _uiState.update {
-            it.copy(descripcion = descripcion)
+            it.copy(prioridadId = prioridadInt)
         }
     }
 
-    fun onTecnicoIdChange(tecnicoId: Int?) {
+    /*fun onSueldoChange(newSueldo: String) {
+        val sueldoDouble = newSueldo.toDoubleOrNull()
         _uiState.update {
-            it.copy(tecnicoId = tecnicoId)
+            it.copy(sueldo = sueldoDouble)
+        }
+    }*/
+
+    fun clearMessages() {
+        _uiState.update {
+            it.copy(errorMessage = null, successMessage = null)
         }
     }
-
-    fun onPrioridadIdChange(newValue: Int?) {
-        _uiState.value = _uiState.value.copy(prioridadId = newValue)
-    }
-
 
 
     fun TicketUiState.toEntity() = TicketEntity(
@@ -173,8 +191,10 @@ class TicketViewModel @Inject constructor(
         fecha = fecha,
         cliente = cliente,
         asunto = asunto,
-        descripcion = descripcion,
-        tecnicoId = tecnicoId ?: 1,
-        prioridadId = prioridadId ?: 1
+     descripcion = descripcion,
+    prioridadId = prioridadId,
+    tecnicoId = tecnicoId,
+    respuesta = respuesta
+
     )
 }

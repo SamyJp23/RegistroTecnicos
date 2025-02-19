@@ -1,5 +1,6 @@
 package edu.ucne.registrotecnicos.presentation.navigation
 
+import Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -12,15 +13,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import edu.ucne.registrotecnicos.presentation.tecnico.TecnicoListScreen
 import edu.ucne.registrotecnicos.presentation.tecnico.TecnicoScreen
-import edu.ucne.registrotecnicos.data.local.dao.TecnicoDao
 
 import edu.ucne.registrotecnicos.data.local.database.TecnicoDb
 import edu.ucne.registrotecnicos.data.local.repositories.TecnicoRepository
 import edu.ucne.registrotecnicos.data.local.repositories.TicketRepository
-import edu.ucne.registrotecnicos.presentation.Home
+import edu.ucne.registrotecnicos.presentation.tecnico.ArticuloListScreen
+import edu.ucne.registrotecnicos.presentation.tecnico.ArticuloScreen
 import edu.ucne.registrotecnicos.presentation.tecnico.DeleteTecnicoScreen
 import edu.ucne.registrotecnicos.presentation.tecnico.EditTecnicoScreen
 import edu.ucne.registrotecnicos.presentation.tecnico.TecnicoTicketsScreen
+import edu.ucne.registrotecnicos.presentation.tecnico.TicketListScreen
+import edu.ucne.registrotecnicos.presentation.tecnico.TicketScreen
 import edu.ucne.registrotecnicos.presentation.ticket.DeleteTicketScreen
 import edu.ucne.registrotecnicos.presentation.ticket.EditTicketScreen
 
@@ -43,7 +46,7 @@ fun AppNavHost(tecnicoDb: TecnicoDb, navHostController: NavHostController
 
     val scope = rememberCoroutineScope()
     val tecnicoRepository = TecnicoRepository(tecnicoDb)
-    val ticketRepository = TicketRepository(tecnicoDb ,tecnicoDb.ticketDao())
+    val ticketRepository = TicketRepository(tecnicoDb )
     NavHost(
 
         navController = navHostController,
@@ -57,56 +60,66 @@ fun AppNavHost(tecnicoDb: TecnicoDb, navHostController: NavHostController
                },
                 goToTicket = {
                     navHostController.navigate(Screen.TicketList)
+                },
+                goToArticulo = {
+                    navHostController.navigate(Screen.ArticuloListScreen)
                 }
+
             )
         }
         composable<Screen.TecnicoList>{
             TecnicoListScreen(
-                tecnicoList = tecnicoList,
-                onAddTecnico = {
-                    navHostController.navigate(Screen.Tecnico(0))
-                },
-                onEditTecnico =  { tecnico ->
-                    navHostController.navigate(Screen.EditTecnico(tecnico.tecnicoId ?: 0))
-                },
-                onDeleteTecnico =  { tecnico ->
-                    navHostController.navigate(Screen.DeleteTecnico(tecnico.tecnicoId ?: 0))
-                },
-                        onViewTickets =  { tecnico ->
-                    navHostController.navigate(Screen.TecnicoTickets(tecnico.tecnicoId ?: 0))
+                createTecnico = { navHostController.navigate(Screen.Tecnico(0)) },
+                goToMenu = { navHostController.navigateUp() },
+                goToTecnico = { tecnicoId ->
+                    navHostController.navigate(Screen.Tecnico(tecnicoId = tecnicoId))
                 }
             )
+
+
 
         }
         composable<Screen.TicketList>{
             TicketListScreen(
-                ticketList = ticketList,
-                tecnicoList = tecnicoList,
-                onAddTicket =   {
-                    navHostController.navigate(Screen.Ticket(0))
-                },
-                onEditTicket =  { ticket ->
-                    navHostController.navigate(Screen.EditTicket(ticket.ticketId ?: 0))
-                },
-                onDeleteTicket =  { ticket ->
-                    navHostController.navigate(Screen.DeleteTicket(ticket.ticketId ?: 0))
+                createTicket = { navHostController.navigate(Screen.Ticket(0)) },
+                goToMenu = { navHostController.navigateUp() },
+                goToTicket = { ticketId ->
+                    navHostController.navigate(Screen.Ticket(ticketId = ticketId))
                 }
             )
 
         }
-        composable<Screen.Tecnico>{
-            TecnicoScreen(tecnicoDb = tecnicoDb,
-                tecnicoRepository = tecnicoRepository,
-                goTecnicoList = {navHostController.navigate(Screen.TecnicoList)}
+        composable<Screen.ArticuloScreen>{
+            val articuloId = it.toRoute<Screen.ArticuloScreen>().articuloId
+          ArticuloScreen(
+              articuloId = articuloId,
+              goBackToList = {navHostController.navigateUp()}
+
+          )
+        }
+
+        composable<Screen.ArticuloListScreen> {
+            ArticuloListScreen(
+                createArticulo = { navHostController.navigate(Screen.ArticuloScreen(0)) },
+                goToMenu = { navHostController.navigateUp() },
+                goToArticulo = { articuloId ->
+                    navHostController.navigate(Screen.ArticuloScreen(articuloId = articuloId))
+                }
             )
         }
-        composable<Screen.Ticket>{
-            TicketScreen( tecnicoDb = tecnicoDb,
-                tecnicoRepository = tecnicoRepository,
-                ticketRepository = ticketRepository,
-                goTicketList = {
-                    navHostController.navigateUp()
-                }
+        composable<Screen.Tecnico> {
+            val tecnicoId = it.toRoute<Screen.Tecnico>().tecnicoId
+            TecnicoScreen(
+                tecnicoId = tecnicoId,
+                goBackToList = {navHostController.navigateUp()}
+
+            )
+        }
+        composable<Screen.Ticket>{ val ticketId = it.toRoute<Screen.Ticket>().ticketId
+            TicketScreen(
+                ticketId = ticketId,
+                goBackToList = {navHostController.navigateUp()}
+
             )
         }
         composable<Screen.EditTecnico>{

@@ -45,7 +45,22 @@ class TecnicoViewModel @Inject constructor(
             }
         }
     }
+    fun find(tecnicoId: Int){
+        viewModelScope.launch {
+            if (tecnicoId > 0) {
+                val tecnico = tecnicoRepository.find(tecnicoId)
+                if (tecnico != null) {
+                    _uiState.update {
+                        it.copy(
+                            tecnicoId = tecnico.tecnicoId,
+                            nombre = tecnico.nombre
 
+                        )
+                    }
+                }
+            }
+        }
+    }
     fun nuevoTecnico() {
         _uiState.update {
             it.copy(
@@ -88,6 +103,21 @@ class TecnicoViewModel @Inject constructor(
             }
         }
     }
+    fun isValid(): Boolean {
+        val nombreValid = _uiState.value.nombre.isNotBlank()
+
+
+        _uiState.update {
+            it.copy(
+                errorMessage = when {
+                    !nombreValid -> "Debes rellenar el campo nombre"
+                    else -> null
+                }
+            )
+        }
+
+        return nombreValid
+    }
 
     fun getTecnicos() {
         viewModelScope.launch {
@@ -99,7 +129,7 @@ class TecnicoViewModel @Inject constructor(
         }
     }
 
-    fun onNombresChange(nombres: String) {
+    fun onNombreChange(nombres: String) {
         _uiState.update {
             it.copy(nombre = nombres)
         }
